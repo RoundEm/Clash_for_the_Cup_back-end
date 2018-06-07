@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-// const cors = require('cors');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
@@ -22,7 +22,7 @@ app.use(
     })
 )
 
-app.get('/', (req, res) => {
+app.get('/api/*', (req, res) => {
     res.json({ok: true})
 });
 
@@ -58,34 +58,34 @@ app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
 let server;
 
-function runServer() {
-	const port = PORT;
-	return new Promise((resolve, reject) => {
-		server = app.listen(port, () => {
-			console.log(`App is listening on port ${port}`);
-			resolve(server);
-		})
-			.on('error', err => {
-				reject(err);
-		});
-	});
-}
+// function runServer() {
+// 	const port = PORT;
+// 	return new Promise((resolve, reject) => {
+// 		server = app.listen(port, () => {
+// 			console.log(`App is listening on port ${port}`);
+// 			resolve(server);
+// 		})
+// 			.on('error', err => {
+// 				reject(err);
+// 		});
+// 	});
+// }
 
-function closeServer() {
-	return new Promise((resolve, reject) => {
-		console.log('closing server');
-		server.close(err => {
-			if (err) {
-				reject(err);
-				return;
-			}
-			resolve();
-		});
-	});
-}
+// function closeServer() {
+// 	return new Promise((resolve, reject) => {
+// 		console.log('closing server');
+// 		server.close(err => {
+// 			if (err) {
+// 				reject(err);
+// 				return;
+// 			}
+// 			resolve();
+// 		});
+// 	});
+// }
 
-if (require.main === module) {
-    runServer().catch(err => console.log(err));
-}
+// if (require.main === module) {
+//     runServer().catch(err => console.log(err));
+// }
 
-module.exports = { app }
+// module.exports = { app }
