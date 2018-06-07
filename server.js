@@ -90,4 +90,4 @@ app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 //     runServer().catch(err => console.log(err));
 // }
 
-// module.exports = { app }
+module.exports = { app }
