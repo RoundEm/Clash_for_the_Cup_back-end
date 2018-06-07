@@ -12,9 +12,10 @@ const leagueSchema = mongoose.Schema({
     },
     players: {
         // TODO: Which one of these is correct (name or type) and do I also need to store player points here? Also update player below
-        name: [String],
-        // type: Array,
-        required: true
+        name: {
+            type: [String],
+            required: true
+        }
     },
     // TODO: should I just hard-code points for now?
     pointsSettings: [{
@@ -60,11 +61,12 @@ const roundSchema = mongoose.Schema({
         required: true
     },
     players: {
-        // TODO: Which one of these is correct (name or type) and do I also need to store player points here?
-        name: [String],
-        // type: Array,
-        required: true
-    }
+        // TODO: Which one of these is correct (name or type) and do I also need to store player points here? Also update player above
+        name: {
+            type: [String],
+            required: true
+        }
+    },
 });
 
 // TODO: is serialize only necessary because I'm including the ID from Mongo?
