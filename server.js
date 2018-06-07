@@ -16,11 +16,11 @@ if (process.env.NODE_ENV !== 'test') {
 	app.use(morgan('common'));
 }   
 
-app.use(
-    cors({
-        origin: CLIENT_ORIGIN
-    })
-)
+// app.use(
+//     cors({
+//         origin: CLIENT_ORIGIN
+//     })
+// )
 
 app.get('/api/*', (req, res) => {
     res.json({ok: true})
