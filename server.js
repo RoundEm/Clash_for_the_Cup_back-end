@@ -5,16 +5,18 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 
-const { League, Round } = require('./models');
+// const { League, Round } = require('./models');
 
 // TODO: how to integrate CLIENT_ORIGIN with other configs (see config.js)? Also, delete const PORT below since it will presumably be in config
-const { CLIENT_ORIGIN, DB_URL, PORT } = require('./config');
+// const { CLIENT_ORIGIN, DB_URL, PORT } = require('./config');
 
-mongoose.connect(DB_URL);
+const PORT = process.env.PORT || 8000;
 
-if (process.env.NODE_ENV !== 'test') {
-	app.use(morgan('common'));
-}   
+// mongoose.connect(DB_URL);
+
+// if (process.env.NODE_ENV !== 'test') {
+// 	app.use(morgan('common'));
+// }   
 
 // app.use(
 //     cors({
@@ -29,34 +31,34 @@ app.get('/api/*', (req, res) => {
 // TODO: these paths don't need to match front-end paths do they? They currently don't except for /dashboard
 
 // GET active leagues
-app.get('/dashboard', (req, res) => {
+// app.get('/dashboard', (req, res) => {
     
-});
-// POST new league
-app.post('/league', (req, res) => {
+// });
+// // POST new league
+// app.post('/league', (req, res) => {
     
-});
-// GET active league by id
-// TODO: This also includes things like getting completed rounds, players, etc. I don't also need separate endpoints for these, right?
-app.get('/league/:id', (req, res) => {
+// });
+// // GET active league by id
+// // TODO: This also includes things like getting completed rounds, players, etc. I don't also need separate endpoints for these, right?
+// app.get('/league/:id', (req, res) => {
     
-});
-// POST new round
-app.post('/round', (req, res) => {
+// });
+// // POST new round
+// app.post('/round', (req, res) => {
     
-});
-// PUT round points
-app.put('./round/id:', (req, res) => {
+// });
+// // PUT round points
+// app.put('./round/id:', (req, res) => {
 
-});
+// });
 
-app.use((req, res) => {
-    res.sendStatus(404);
-});
+// app.use((req, res) => {
+//     res.sendStatus(404);
+// });
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
-let server;
+// let server;
 
 // function runServer() {
 // 	const port = PORT;
