@@ -84,4 +84,4 @@ roundSchema.methods.serialize = function() {
 const League = mongoose.model('League', leagueSchema);
 const Round = mongoose.model('Round', roundSchema);
 
-module.exports = { League, Rounds }
+module.exports = { League, Round }
