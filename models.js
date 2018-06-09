@@ -1,53 +1,35 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const leagueSchema = mongoose.Schema({
-    leagueName: {
+const leagueSchema = Schema({
+    name: {
         type: String,
         required: true
     },
+    players: [{ 
+        type: Schema.Types.ObjectId, 
+        ref: 'Player'
+    }],
     endDate: {
         type: Date,
-        default: Date.now,
-        required: true
+        default: Date.now
     },
-    players: {
-        // TODO: Which one of these is correct (name or type) and do I also need to store player points here? Also update player below
-        name: {
-            type: [String],
-            required: true
-        }
-    },
-    // TODO: should I just hard-code points for now?
-    pointsSettings: [{
-        firstPlace: Number,
-        secondPlace: Number,
-        ltEagle: Number,
-        eagle: Number,
-        birdie: Number,
-        par: Number,
-        gtBogey: Number,
-        mulligan: Number,
-        holeNotFinished: Number
+    // TODO: create validator that length > 1 and type exists
+    pointTypes: [String],
+    rounds: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Round'
     }]
 });
 
-leagueSchema.methods.serialize = function() {
-    return {
-        id: this._id,
-        leagueName: this.leagueName,
-        endDate: this.endDate,
-        players: this.players,
-        pointsSettings: this.pointsSettings
-    }
-}
-
-// TODO: Should round be it's own schema or part of league?
-const roundSchema = mongoose.Schema({
-    leagueName: {
+const playerSchema = Schema({
+    name: {
         type: String,
         required: true
-    },
-    eventName: {
+    }
+});
+const roundSchema = Schema({
+    name: {
         type: String,
         required: true
     },
@@ -57,31 +39,62 @@ const roundSchema = mongoose.Schema({
     },
     date: {
         type: Date,
-        default: Date.now,
+        default: Date.now
+    },
+    players: [{ 
+        type: Schema.Types.ObjectId, 
+        ref: 'Player'
+    }]
+});
+const pointWeightSchema = Schema({
+    type: {
+        type: String,
         required: true
     },
-    players: {
-        // TODO: Which one of these is correct (name or type) and do I also need to store player points here? Also update player above
-        name: {
-            type: [String],
-            required: true
-        }
-    },
-});
-
-// TODO: is serialize only necessary because I'm including the ID from Mongo?
-roundSchema.methods.serialize = function() {
-    return {
-        id: this._id,
-        eventName: this.eventName,
-        courseName: this.courseName,
-        date: this.date,
-        players: this.players
+    weight: {
+        type: Number,
+        required: true
     }
-}
-
+});
+const pointAllocationSchema = Schema({
+    league: [{ 
+        type: Schema.Types.ObjectId, 
+        ref: 'League'
+    }],
+    players: [{ 
+        type: Schema.Types.ObjectId, 
+        ref: 'Player'
+    }],    
+    round: [{ 
+        type: Schema.Types.ObjectId, 
+        ref: 'Round'
+    }],
+    counts: {
+        // TODO: if this doesn't work use String type w/getter and setter: https://stackoverflow.com/questions/17497875/storing-json-object-in-mongoose-string-key
+        type: Object
+        // label: count,
+        // label: count,
+    },
+    total: {
+        type: Number
+    }
+    //TODO: add addEntry and computeTotal
+});
 
 const League = mongoose.model('League', leagueSchema);
 const Round = mongoose.model('Round', roundSchema);
+const Player = mongoose.model('Player', playerSchema);
+const PointWeight = mongoose.model('PointsWeight', pointWeightSchema);
+const PointAllocation = mongoose.model('PointsAllocation', pointAllocationSchema);
 
-module.exports = { League, Round }
+// leagueSchema.methods.serialize = function() {
+//     return {
+//         id: this._id,
+//         leagueName: this.leagueName,
+//         endDate: this.endDate,
+//         players: this.players,
+//         pointsSettings: this.pointsSettings
+//     }
+// }
+
+module.exports = { League, Round, Player, PointWeight, PointAllocation }
