@@ -1,93 +1,132 @@
 const express = require('express');
 const app = express();
-// const cors = require('cors');
+const cors = require('cors');
 const bodyParser = require('body-parser');
+const jsonParser = bodyParser.json();
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 
-// const { League, Round } = require('./models');
+const { League, Round, Player, PointWeight, PointAllocation } = require('./models');
 
-// TODO: how to integrate CLIENT_ORIGIN with other configs (see config.js)? Also, delete const PORT below since it will presumably be in config
-// const { CLIENT_ORIGIN, DB_URL, PORT } = require('./config');
+const { CLIENT_ORIGIN, DB_URL, PORT } = require('./config');
 
-const PORT = process.env.PORT || 8000;
+mongoose.connect(DB_URL);
 
-// mongoose.connect(DB_URL);
-
-// if (process.env.NODE_ENV !== 'test') {
-// 	app.use(morgan('common'));
-// }   
+if (process.env.NODE_ENV !== 'test') {
+	app.use(morgan('common'));
+}   
 
 // app.use(
 //     cors({
 //         origin: CLIENT_ORIGIN
-//     })
+// 	})
 // )
 
-app.get('/api/*', (req, res) => {
-    res.json({ok: true})
+// POST new league 
+app.post('/league', jsonParser, (req, res) => {
+	console.log('req.body: ', req.body)
+	League.create(req.body)
+		.then(league => {
+			res.status(201).json(league);
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(400).json(error);
+		});
+    
 });
 
-// TODO: these paths don't need to match front-end paths do they? They currently don't except for /dashboard
+// POST league point settings
+app.post('/league/:id/point-settings', jsonParser, (req, res) => {
+    PointWeight.create(req.body)
+		.then(points => {
+			res.status(201).json(points);
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(400).json(error);
+		});
+});
 
-// GET active leagues
-// app.get('/dashboard', (req, res) => {
+// GET league
+app.get('/leagues/:id', (req, res) => {
+	console.log('req.params.id: ', req.params.id)
+	League.findById(req.params.id)
+		.then((league) => {
+			res.json(league)
+		})
+		.catch(err => {
+			console.log(err)
+		})
+});
+
+// UPDATE league
+app.put('/leagues/:id', (req, res) => {
     
-// });
-// // POST new league
-// app.post('/league', (req, res) => {
+});
+
+// POST new round
+app.post('/leagues/:id/round', jsonParser, (req, res) => {
     
-// });
-// // GET active league by id
-// // TODO: This also includes things like getting completed rounds, players, etc. I don't also need separate endpoints for these, right?
-// app.get('/league/:id', (req, res) => {
+});
+
+// GET round
+app.get('/leagues/:id/round/:id', (req, res) => {
     
-// });
-// // POST new round
-// app.post('/round', (req, res) => {
-    
-// });
-// // PUT round points
-// app.put('./round/id:', (req, res) => {
+});
 
-// });
+// UPDATE round
+app.put('/leagues/:id/round/:id', (req, res) => {
 
-// app.use((req, res) => {
-//     res.sendStatus(404);
-// });
+});
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+// POST points weighting
+app.post('./points-weighting', jsonParser, (req, res) => {
 
-// let server;
+});
 
-// function runServer() {
-// 	const port = PORT;
-// 	return new Promise((resolve, reject) => {
-// 		server = app.listen(port, () => {
-// 			console.log(`App is listening on port ${port}`);
-// 			resolve(server);
-// 		})
-// 			.on('error', err => {
-// 				reject(err);
-// 		});
-// 	});
-// }
+// POST points allocation
+app.post('./points-allocation/add-entry', jsonParser, (req, res) => {
 
-// function closeServer() {
-// 	return new Promise((resolve, reject) => {
-// 		console.log('closing server');
-// 		server.close(err => {
-// 			if (err) {
-// 				reject(err);
-// 				return;
-// 			}
-// 			resolve();
-// 		});
-// 	});
-// }
+});
+// PUT points allocation
+app.put('./points-allocation/', (req, res) => {
 
-// if (require.main === module) {
-//     runServer().catch(err => console.log(err));
-// }
+});
+// No endpoint hit
+app.use((req, res) => {
+    res.sendStatus(404);
+});
 
-module.exports = { app }
+let server;
+
+function runServer() {
+	return new Promise((resolve, reject) => {
+		server = app.listen(PORT, () => {
+			console.log(`App is listening on port ${PORT}`);
+			resolve(server);
+		})
+			.on('error', err => {
+				reject(err);
+		});
+	});
+}
+
+function closeServer() {
+	return new Promise((resolve, reject) => {
+		console.log('closing server');
+		server.close(err => {
+			if (err) {
+				reject(err);
+				return;
+			}
+			resolve();
+		});
+	});
+}
+
+if (require.main === module) {
+    runServer().catch(err => console.log(err));
+}
+
+module.exports = { app, runServer, closeServer }

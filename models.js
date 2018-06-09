@@ -6,20 +6,20 @@ const leagueSchema = Schema({
         type: String,
         required: true
     },
-    players: [{ 
-        type: Schema.Types.ObjectId, 
-        ref: 'Player'
-    }],
+    players: [String],
+    // players: [{ 
+    //     type: Schema.Types.ObjectId, 
+    //     ref: 'Player'
+    // }],
     endDate: {
         type: Date,
         default: Date.now
     },
-    // TODO: create validator that length > 1 and type exists
     pointTypes: [String],
-    rounds: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Round'
-    }]
+    // rounds: [{
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'Round'
+    // }]
 });
 
 const playerSchema = Schema({
@@ -47,6 +47,10 @@ const roundSchema = Schema({
     }]
 });
 const pointWeightSchema = Schema({
+    league: { 
+        type: Schema.Types.ObjectId, 
+        ref: 'League'
+    },
     type: {
         type: String,
         required: true
