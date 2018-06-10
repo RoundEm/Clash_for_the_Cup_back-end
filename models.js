@@ -1,39 +1,53 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const leagueSchema = Schema({
+const leagueSchema = new Schema({
     name: {
         type: String,
         required: true
     },
-    players: [String],
-    // players: [{ 
-    //     type: Schema.Types.ObjectId, 
-    //     ref: 'Player'
-    // }],
     endDate: {
         type: Date,
         default: Date.now
     },
     pointTypes: [String],
-    // rounds: [{
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Round'
-    // }]
-});
+    rounds: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Round'
+    }]
+}, { toJSON: { virtuals: true } });
 
-const playerSchema = Schema({
+leagueSchema.virtual('players', {
+    ref: 'Player',
+    localField: '_id',
+    foreignField: 'league'
+});
+// leagueSchema.virtual('players').get(async function() {
+//     console.log('virtual ran')
+//     const players = await this.model('Player').find({
+//         league: this._id
+//     });
+//     console.log(players)
+//     return players
+// });
+
+const playerSchema = new Schema({
     name: {
         type: String,
         required: true
+    },
+    league: {
+        type: Schema.Types.ObjectId,
+        ref: 'League'
     }
 });
+
 const roundSchema = Schema({
     name: {
         type: String,
         required: true
     },
-    courseName: {
+    course: {
         type: String,
         required: true
     },
@@ -46,6 +60,7 @@ const roundSchema = Schema({
         ref: 'Player'
     }]
 });
+
 const pointWeightSchema = Schema({
     league: { 
         type: Schema.Types.ObjectId, 
@@ -60,11 +75,12 @@ const pointWeightSchema = Schema({
         required: true
     }
 });
+
 const pointAllocationSchema = Schema({
-    league: [{ 
+    league: { 
         type: Schema.Types.ObjectId, 
         ref: 'League'
-    }],
+    },
     players: [{ 
         type: Schema.Types.ObjectId, 
         ref: 'Player'
@@ -88,17 +104,7 @@ const pointAllocationSchema = Schema({
 const League = mongoose.model('League', leagueSchema);
 const Round = mongoose.model('Round', roundSchema);
 const Player = mongoose.model('Player', playerSchema);
-const PointWeight = mongoose.model('PointsWeight', pointWeightSchema);
-const PointAllocation = mongoose.model('PointsAllocation', pointAllocationSchema);
-
-// leagueSchema.methods.serialize = function() {
-//     return {
-//         id: this._id,
-//         leagueName: this.leagueName,
-//         endDate: this.endDate,
-//         players: this.players,
-//         pointsSettings: this.pointsSettings
-//     }
-// }
+const PointWeight = mongoose.model('PointWeight', pointWeightSchema);
+const PointAllocation = mongoose.model('PointAllocation', pointAllocationSchema);
 
 module.exports = { League, Round, Player, PointWeight, PointAllocation }
