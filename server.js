@@ -36,6 +36,33 @@ app.post('/league', jsonParser, (req, res) => {
     
 });
 
+// POST league players
+app.post('/league/:id/players', jsonParser, (req, res) => {
+	console.log('req.body players: ', req.body)
+	Player.create(req.body)
+		.then(players => {
+			res.status(201).json(players);
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(400).json(error);
+		});
+    
+});
+
+// DELETE league players
+app.delete('/league/:id/remove-player/:playerId', (req, res) => {
+	console.log('req.body player id: ', req.body)
+	Player.findByIdAndRemove(req.params.playerId, { $set: req.body })
+		.then(players => {
+			res.status(204).send('Player deleted');
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(400).json(error);
+		});
+    
+});
 // POST league point settings
 app.post('/league/:id/point-settings', jsonParser, (req, res) => {
     PointWeight.create(req.body)
@@ -50,14 +77,15 @@ app.post('/league/:id/point-settings', jsonParser, (req, res) => {
 
 // GET league
 app.get('/leagues/:id', (req, res) => {
-	console.log('req.params.id: ', req.params.id)
 	League.findById(req.params.id)
+		// .populate('name')
 		.then((league) => {
 			res.json(league)
 		})
 		.catch(err => {
 			console.log(err)
-		})
+			res.status(400).json(error);
+		});
 });
 
 // UPDATE league
@@ -67,7 +95,14 @@ app.put('/leagues/:id', (req, res) => {
 
 // POST new round
 app.post('/leagues/:id/round', jsonParser, (req, res) => {
-    
+    Round.create(req.body)
+		.then(course => {
+			res.status(201).json(course);
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(400).json(error);
+		});
 });
 
 // GET round
