@@ -16,11 +16,11 @@ if (process.env.NODE_ENV !== 'test') {
 	app.use(morgan('common'));
 }   
 
-// app.use(
-//     cors({
-//         origin: CLIENT_ORIGIN
-// 	})
-// )
+app.use(
+    cors({
+        origin: CLIENT_ORIGIN
+	})
+)
 
 // POST new league 
 app.post('/league', jsonParser, (req, res) => {
@@ -33,13 +33,15 @@ app.post('/league', jsonParser, (req, res) => {
 			console.log(err);
 			res.status(400).json(err);
 		});
-    
 });
 
 // POST league players
 app.post('/leagues/:id/players', jsonParser, (req, res) => {
-	console.log('req.body players: ', req.body)
-	Player.create(req.body)
+	const data = {
+		name: req.body.name,
+		league: req.params.id
+	}
+	Player.create(data)
 		.then(players => {
 			res.status(201).json(players);
 		})
@@ -48,32 +50,6 @@ app.post('/leagues/:id/players', jsonParser, (req, res) => {
 			res.status(400).json(err);
 		});
     
-});
-
-// GET league players
-app.get('/leagues/:id/players', (req, res) => {
-	Player.find({})
-		.then(players => {
-			console.log(players)
-			res.json(players)
-		})
-		.catch(err => {
-			console.log(err);
-			res.status(400).json(err);
-		});
-})
-
-// DELETE league players
-app.delete('/leagues/:id/remove-player/:playerId', (req, res) => {
-	console.log('req.body player id: ', req.body)
-	Player.findByIdAndRemove(req.params.playerId)
-		.then(players => {
-			res.status(204).send('Player deleted');
-		})
-		.catch((err) => {
-			console.log(err);
-			res.status(400).json(err);
-		});
 });
 
 // POST league point settings
@@ -88,15 +64,36 @@ app.post('/leagues/:id/point-settings', jsonParser, (req, res) => {
 		});
 });
 
-// GET league TODO: get populate working
-app.get('/leagues/:id', (req, res, next) => {
+// GET league players
+app.get('/leagues/:id/players', (req, res) => {
+	Player.find({})
+		.then(players => {
+			console.log(players)
+			res.json(players)
+		})
+		.catch(err => {
+			console.log(err);
+			res.status(400).json(err);
+		});
+});
+
+// DELETE league players
+app.delete('/leagues/:id/remove-player/:playerId', (req, res) => {
+	Player.findByIdAndRemove(req.params.playerId)
+		.then(players => {
+			res.status(204).send('Player deleted');
+		})
+		.catch((err) => {
+			console.log(err);
+			res.status(400).json(err);
+		});
+});
+
+// GET league
+app.get('/leagues/:id', (req, res) => {
 	League.findById(req.params.id)
-		.populate('name')
-		// .exec((err, league) => {
-		// 	if (err) return handleError(err);
-		// 	res.json(league)
-		// })
-		.then((league) => {
+		.populate('players')
+		.then(league => {
 			res.json(league)
 		})
 		.catch(err => {
@@ -105,9 +102,17 @@ app.get('/leagues/:id', (req, res, next) => {
 		});
 });
 
-// UPDATE league
-app.put('/leagues/:id', (req, res) => {
-    
+// UPDATE league TODO: Working only when players is commented out
+app.put('/leagues/:id', jsonParser, (req, res) => {
+	console.log('req.body: ', req.body)
+	League.findByIdAndUpdate(req.params.id, { $set: req.body }, { "new": true })
+		.then(league => {
+			res.status(204).json(league)
+		})
+		.catch(err => {
+			console.log(err)
+			res.status(400).json(err);
+		});
 });
 
 // POST new round
@@ -136,23 +141,44 @@ app.get('/leagues/:id/round/:roundId', (req, res) => {
 });
 
 // UPDATE round
-app.put('/leagues/:id/round/:id', (req, res) => {
-
+app.put('/leagues/:id/round/:roundId', jsonParser, (req, res) => {
+	console.log('req.body: ', req.body)
+	Round.findByIdAndUpdate(req.params.roundId, { $set: req.body }, { "new": true })
+		.then(round => {
+			res.status(204).json(round);
+		})
+		.catch(err => {
+			console.log(err)
+			res.status(400).json(err);
+		});
 });
 
 // POST points weighting
-app.post('./points-weighting', jsonParser, (req, res) => {
+app.post('./points-weighting/assign-weight', jsonParser, (req, res) => {
+
+});
+
+// PUT points weighting
+app.put('./points-weighting/update-weight', jsonParser, (req, res) => {
 
 });
 
 // POST points allocation
-app.post('./points-allocation/add-entry', jsonParser, (req, res) => {
+app.post('./points-allocation/add-points', jsonParser, (req, res) => {
 
 });
 // PUT points allocation
-app.put('./points-allocation/', (req, res) => {
+app.put('./points-allocation/update-points', (req, res) => {
 
 });
+
+
+// If time permits:
+// DELETE round
+// DELETE points weighting
+// DELETE points allocation
+
+
 // No endpoint hit
 app.use((req, res) => {
     res.sendStatus(404);
@@ -166,8 +192,8 @@ function runServer() {
 			console.log(`App is listening on port ${PORT}`);
 			resolve(server);
 		})
-			.on('error', err => {
-				reject(err);
+		.on('error', err => {
+			reject(err);
 		});
 	});
 }
