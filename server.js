@@ -50,7 +50,20 @@ app.post('/league/:id/players', jsonParser, (req, res) => {
     
 });
 
-// DELETE league players
+// GET league players
+app.get('/league/:id/players', (req, res) => {
+	Player.find({})
+		.then(players => {
+			console.log(players)
+			res.json(players)
+		})
+		.catch(err => {
+			console.log(err)
+			res.status(400).json(error);
+		});
+})
+
+// DELETE league players - TODO: get it working
 app.delete('/league/:id/remove-player/:playerId', (req, res) => {
 	console.log('req.body player id: ', req.body)
 	Player.findByIdAndRemove(req.params.playerId, { $set: req.body })
@@ -61,8 +74,8 @@ app.delete('/league/:id/remove-player/:playerId', (req, res) => {
 			console.log(error);
 			res.status(400).json(error);
 		});
-    
 });
+
 // POST league point settings
 app.post('/league/:id/point-settings', jsonParser, (req, res) => {
     PointWeight.create(req.body)
@@ -76,16 +89,20 @@ app.post('/league/:id/point-settings', jsonParser, (req, res) => {
 });
 
 // GET league
-app.get('/leagues/:id', (req, res) => {
+app.get('/league/:id', (req, res, next) => {
 	League.findById(req.params.id)
-		// .populate('name')
-		.then((league) => {
+		.populate('name')
+		.exec((err, league) => {
+			if (err) return next(err);
 			res.json(league)
 		})
-		.catch(err => {
-			console.log(err)
-			res.status(400).json(error);
-		});
+		// .then((league) => {
+		// 	res.json(league)
+		// })
+		// .catch(err => {
+		// 	console.log(err)
+		// 	res.status(400).json(error);
+		// });
 });
 
 // UPDATE league
