@@ -185,28 +185,28 @@ app.get('/leagues/:id/point-weighting', (req, res) => {
 });
 
 // PUT point weighting
-app.put('/leagues/:id/point-weighting/:pointType', jsonParser, (req, res) => {
-	console.log('req.params: ', req.params)
+app.put('/leagues/:id/point-weighting', jsonParser, (req, res) => {
 	const data = {
 		league: req.params.id,
 		weight: req.body.weight
 	}
-	PointWeight.update({type: req.params.pointType}, { $set: data }, { "new": true })
+	PointWeight.update({type: req.body.type}, { $set: data }, { "new": true })
 		.then(pointType => {
-			res.status(204).json(pointType)
+			res.status(204).json(pointType);
 		})
 		.catch(err => {
-			console.log(err)
+			console.log(err);
 			res.status(400).json(err);
 		});
 });
 
 // POST points allocation
-app.post('/leagues/:id/points-allocation/add-points', jsonParser, (req, res) => {
+app.post('/leagues/:id/:roundId/points-allocation/:playerID', jsonParser, (req, res) => {
 
 });
+
 // PUT points allocation
-app.put('/leagues/:id/points-allocation/update-points', jsonParser, (req, res) => {
+app.put('/leagues/:id/:roundId/points-allocation/:playerID', jsonParser, (req, res) => {
 
 });
 
