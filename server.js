@@ -89,6 +89,7 @@ app.delete('/leagues/:id/remove-player/:playerId', (req, res) => {
 		});
 });
 
+// TODO: why are there fields for both id and _id on returned json?
 // GET league
 app.get('/leagues/:id', (req, res) => {
 	League.findById(req.params.id)
@@ -102,9 +103,9 @@ app.get('/leagues/:id', (req, res) => {
 		});
 });
 
-// UPDATE league TODO: Working only when players is commented out
+// UPDATE league
 app.put('/leagues/:id', jsonParser, (req, res) => {
-	console.log('req.body: ', req.body)
+	// console.log('req.body: ', req.body)
 	League.findByIdAndUpdate(req.params.id, { $set: req.body }, { "new": true })
 		.then(league => {
 			res.status(204).json(league)
@@ -129,7 +130,7 @@ app.post('/leagues/:id/round', jsonParser, (req, res) => {
 
 // GET round
 app.get('/leagues/:id/round/:roundId', (req, res) => {
-	console.log('req.params.roundId: ', req.params.roundId)
+	// console.log('req.params.roundId: ', req.params.roundId)
 	Round.findById(req.params.roundId)
 		.then(round => {
 			res.json(round);
@@ -142,7 +143,7 @@ app.get('/leagues/:id/round/:roundId', (req, res) => {
 
 // UPDATE round
 app.put('/leagues/:id/round/:roundId', jsonParser, (req, res) => {
-	console.log('req.body: ', req.body)
+	// console.log('req.body: ', req.body)
 	Round.findByIdAndUpdate(req.params.roundId, { $set: req.body }, { "new": true })
 		.then(round => {
 			res.status(204).json(round);
@@ -153,31 +154,66 @@ app.put('/leagues/:id/round/:roundId', jsonParser, (req, res) => {
 		});
 });
 
-// POST points weighting
-app.post('./points-weighting/assign-weight', jsonParser, (req, res) => {
-
+// POST point weighting
+app.post('/leagues/:id/point-weighting/:pointType', jsonParser, (req, res) => {
+	const data = {
+		league: req.params.id,
+		type: req.params.pointType,
+		weight: req.body.weight
+	}
+	PointWeight.create(data)
+		.then(pointType => {
+			// console.log(pointType)
+			res.json(pointType)
+		})
+		.catch(err => {
+			console.log(err)
+			res.status(400).json(err);
+		});
 });
 
-// PUT points weighting
-app.put('./points-weighting/update-weight', jsonParser, (req, res) => {
+// GET point weightings
+app.get('/leagues/:id/point-weighting', (req, res) => {
+	PointWeight.find({})
+		.then(points => {
+			res.json(points)
+		})
+		.catch(err => {
+			console.log(err)
+			res.status(400).json(err);
+		});
+});
 
+// PUT point weighting
+app.put('/leagues/:id/point-weighting/:pointType', jsonParser, (req, res) => {
+	console.log('req.params: ', req.params)
+	const data = {
+		league: req.params.id,
+		weight: req.body.weight
+	}
+	PointWeight.update({type: req.params.pointType}, { $set: data }, { "new": true })
+		.then(pointType => {
+			res.status(204).json(pointType)
+		})
+		.catch(err => {
+			console.log(err)
+			res.status(400).json(err);
+		});
 });
 
 // POST points allocation
-app.post('./points-allocation/add-points', jsonParser, (req, res) => {
+app.post('/leagues/:id/points-allocation/add-points', jsonParser, (req, res) => {
 
 });
 // PUT points allocation
-app.put('./points-allocation/update-points', (req, res) => {
+app.put('/leagues/:id/points-allocation/update-points', jsonParser, (req, res) => {
 
 });
-
 
 // If time permits:
 // DELETE round
 // DELETE points weighting
 // DELETE points allocation
-
 
 // No endpoint hit
 app.use((req, res) => {
