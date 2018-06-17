@@ -8,13 +8,12 @@ const leagueSchema = new Schema({
     },
     endDate: {
         type: Date,
-        default: Date.now
     },
     pointTypes: [String],
-    rounds: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Round'
-    }]
+    // rounds: [{
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'Round'
+    // }]
 }, { toJSON: { virtuals: true } });
 
 leagueSchema.virtual('players', {
@@ -22,14 +21,12 @@ leagueSchema.virtual('players', {
     localField: '_id',
     foreignField: 'league'
 });
-// leagueSchema.virtual('players').get(async function() {
-//     console.log('virtual ran')
-//     const players = await this.model('Player').find({
-//         league: this._id
-//     });
-//     console.log(players)
-//     return players
-// });
+
+leagueSchema.virtual('rounds', {
+    ref: 'Round',
+    localField: '_id',
+    foreignField: 'league'
+});
 
 const playerSchema = new Schema({
     name: {
@@ -42,7 +39,12 @@ const playerSchema = new Schema({
     }
 });
 
+// TODO: does this need to have a reference to league? How do players tie in?
 const roundSchema = Schema({
+    league: {
+        type: Schema.Types.ObjectId,
+        ref: 'League'
+    },
     name: {
         type: String,
         required: true
@@ -55,24 +57,29 @@ const roundSchema = Schema({
         type: Date,
         default: Date.now
     },
-    players: [{ 
-        type: Schema.Types.ObjectId, 
-        ref: 'Player'
-    }]
+    // players: [{ 
+    //     type: Schema.Types.ObjectId, 
+    //     ref: 'Player'
+    // }]
+    players: [String]
 });
+
 
 const pointWeightSchema = Schema({
     league: { 
         type: Schema.Types.ObjectId, 
         ref: 'League'
     },
+    // pointDef: [{
+    //     type: String,
+    //     weight: Number
+    // }]
     type: {
         type: String,
         required: true
     },
     weight: {
-        type: Number,
-        required: true
+        type: Number
     }
 });
 
