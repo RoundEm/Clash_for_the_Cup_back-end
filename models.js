@@ -8,12 +8,7 @@ const leagueSchema = new Schema({
     },
     endDate: {
         type: Date,
-    },
-    pointTypes: [String],
-    // rounds: [{
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Round'
-    // }]
+    }
 }, { toJSON: { virtuals: true } });
 
 leagueSchema.virtual('players', {
@@ -24,6 +19,12 @@ leagueSchema.virtual('players', {
 
 leagueSchema.virtual('rounds', {
     ref: 'Round',
+    localField: '_id',
+    foreignField: 'league'
+});
+
+leagueSchema.virtual('points', {
+    ref: 'PointWeight',
     localField: '_id',
     foreignField: 'league'
 });
@@ -39,8 +40,7 @@ const playerSchema = new Schema({
     }
 });
 
-// TODO: does this need to have a reference to league? How do players tie in?
-const roundSchema = Schema({
+const roundSchema = new Schema({
     league: {
         type: Schema.Types.ObjectId,
         ref: 'League'
@@ -55,25 +55,26 @@ const roundSchema = Schema({
     },
     date: {
         type: Date,
-        default: Date.now
+        required: true
     },
-    // players: [{ 
-    //     type: Schema.Types.ObjectId, 
-    //     ref: 'Player'
-    // }]
-    players: [String]
+    players: [{ 
+        type: Schema.Types.ObjectId, 
+        ref: 'Player'
+    }]
+    // players: [String]
 });
 
+// leagueSchema.virtual('points', {
+//     ref: 'PointAllocation',
+//     localField: '_id',
+//     foreignField: 'total'
+// });
 
-const pointWeightSchema = Schema({
+const pointWeightSchema = new Schema({
     league: { 
         type: Schema.Types.ObjectId, 
         ref: 'League'
     },
-    // pointDef: [{
-    //     type: String,
-    //     weight: Number
-    // }]
     type: {
         type: String,
         required: true
@@ -83,29 +84,20 @@ const pointWeightSchema = Schema({
     }
 });
 
-const pointAllocationSchema = Schema({
+const pointAllocationSchema = new Schema({
     league: { 
         type: Schema.Types.ObjectId, 
         ref: 'League'
     },
-    players: [{ 
+    player: { 
         type: Schema.Types.ObjectId, 
         ref: 'Player'
-    }],    
-    round: [{ 
+    },    
+    round: { 
         type: Schema.Types.ObjectId, 
         ref: 'Round'
-    }],
-    counts: {
-        // TODO: if this doesn't work use String type w/getter and setter: https://stackoverflow.com/questions/17497875/storing-json-object-in-mongoose-string-key
-        type: Object
-        // label: count,
-        // label: count,
     },
-    total: {
-        type: Number
-    }
-    //TODO: add addEntry and computeTotal
+    total: Number
 });
 
 const League = mongoose.model('League', leagueSchema);
@@ -115,3 +107,11 @@ const PointWeight = mongoose.model('PointWeight', pointWeightSchema);
 const PointAllocation = mongoose.model('PointAllocation', pointAllocationSchema);
 
 module.exports = { League, Round, Player, PointWeight, PointAllocation }
+
+// counts: {
+    //     TODO: if this doesn't work use String type w/getter and setter: https://stackoverflow.com/questions/17497875/storing-json-object-in-mongoose-string-key
+    //     type: Object
+    //     label: count,
+    //     label: count,
+    // },
+    // TODO: add addEntry and computeTotal
