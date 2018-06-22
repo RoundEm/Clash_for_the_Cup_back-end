@@ -210,29 +210,12 @@ app.put('/leagues/:id/round/:roundId', jsonParser, (req, res) => {
 });
 
 // POST points allocation
-// app.post('/leagues/:id/:roundId/points-allocation/:playerId', jsonParser, (req, res) => {
-// 	console.log('post points req.body.total: ', req.body)
-// 	const points = {
-// 		league: req.params.id,
-// 		round: req.params.roundId,
-// 		player: req.params.playerId,
-// 		total: req.body.total
-// 	}
-// 	PointAllocation.create(points)
-// 		.then(roundPoints => {
-// 			res.status(201).json(roundPoints);
-// 		})
-// 		.catch(err => {
-// 			console.log(err)
-// 			res.status(400).json(err);
-// 		});
-// });
-
 app.post('/leagues/:id/:roundId/points-allocation/:playerId', jsonParser, (req, res) => {
 	console.log('post points req.body.total: ', req.body)
 	PointAllocation.update(
 		{
 			round: req.params.roundId,
+			league: req.params.id,
 			player: req.params.playerId,
 		},
 		{
@@ -242,8 +225,7 @@ app.post('/leagues/:id/:roundId/points-allocation/:playerId', jsonParser, (req, 
 			total: req.body.total
 		},
 		{
-			upsert: true,
-			multi: true
+			upsert: true
 		})
 		.then(roundPoints => {
 			console.log('roundPoints: ', roundPoints)
@@ -256,16 +238,16 @@ app.post('/leagues/:id/:roundId/points-allocation/:playerId', jsonParser, (req, 
 });
 
 // GET points allocation for each player
-app.get('/leagues/:id/points-allocation/:playerId', (req, res) => {
-	PointAllocation.find({player: req.params.playerId})
-		.then(points => {
-			res.json(points);
-		})
-		.catch(err => {
-			console.log(err)
-			res.status(400).json(err);
-		});
-});
+// app.get('/leagues/:id/points-allocation/:playerId', (req, res) => {
+// 	PointAllocation.find({player: req.params.playerId})
+// 		.then(points => {
+// 			res.json(points);
+// 		})
+// 		.catch(err => {
+// 			console.log(err)
+// 			res.status(400).json(err);
+// 		});
+// });
 
 // GET points for all players in a round
 app.get('/leagues/:id/:roundId/points-allocation', (req, res) => {
@@ -281,7 +263,7 @@ app.get('/leagues/:id/:roundId/points-allocation', (req, res) => {
 
 // GET points allocation for all player in all rounds
 app.get('/leagues/:id/points-allocation', (req, res) => {
-	PointAllocation.find({})
+	PointAllocation.find({league: req.params.id})
 		.then(allLeaguePoints => {
 			res.json(allLeaguePoints);
 		})
