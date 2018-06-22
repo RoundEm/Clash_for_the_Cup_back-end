@@ -233,6 +233,7 @@ app.post('/leagues/:id/:roundId/points-allocation/:playerId', jsonParser, (req, 
 	PointAllocation.update(
 		{
 			round: req.params.roundId,
+			player: req.params.playerId,
 		},
 		{
 			league: req.params.id,
@@ -241,7 +242,8 @@ app.post('/leagues/:id/:roundId/points-allocation/:playerId', jsonParser, (req, 
 			total: req.body.total
 		},
 		{
-			upsert: true
+			upsert: true,
+			multi: true
 		})
 		.then(roundPoints => {
 			console.log('roundPoints: ', roundPoints)
