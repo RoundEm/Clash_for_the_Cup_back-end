@@ -24,9 +24,10 @@ app.use(
 
 // POST new league 
 app.post('/league', jsonParser, (req, res) => {
-	console.log('req.body: ', req.body)
+	console.log('POST league req.body: ', req.body)
 	League.create(req.body)
 		.then(league => {
+			console.log('postLeagueRes: ', league)
 			res.status(201).json(league);
 		})
 		.catch((err) => {
@@ -50,7 +51,6 @@ app.get('/leagues', (req, res) => {
 		});
 })
 
-// TODO: why are there fields for both id and _id on returned json?
 // GET league
 app.get('/leagues/:id', (req, res) => {
 	League.findById(req.params.id)
@@ -61,27 +61,23 @@ app.get('/leagues/:id', (req, res) => {
 			res.json(league)
 		})
 		.catch(err => {
-			console.log(err)
 			res.status(400).json(err);
 		});
 });
 
-// UPDATE league
-app.put('/leagues/:id', jsonParser, (req, res) => {
-	// console.log('req.body: ', req.body)
-	League.findByIdAndUpdate(req.params.id, { $set: req.body }, { "new": true })
-		.then(league => {
-			res.status(204).json(league)
+// DELETE league
+app.delete('/leagues/:id', (req, res) => {
+	League.findByIdAndRemove(req.params.id)
+		.then(() => {
+			res.status(204).end();
 		})
 		.catch(err => {
-			console.log(err)
 			res.status(400).json(err);
-		});
+		})
 });
 
 // POST point weighting
 app.post('/leagues/:id/point-weighting', jsonParser, (req, res) => {
-	console.log('POST point weight req.body: ',res.body)
 	const data = {
 		league: req.params.id,
 		type: req.body.type,
@@ -92,10 +88,26 @@ app.post('/leagues/:id/point-weighting', jsonParser, (req, res) => {
 			res.json(pointType)
 		})
 		.catch(err => {
-			console.log(err)
 			res.status(400).json(err);
 		});
 });
+
+// PUT point weighting - TODO: implement front-end
+// app.put('/leagues/:id/point-weighting', jsonParser, (req, res) => {
+// 	const data = {
+// 		league: req.params.id,
+// 		type: req.body.type,
+// 		weight: req.body.weight
+// 	}
+// 	PointWeight.update({type: req.body.type}, { $set: data }, { "new": true })
+// 		.then(pointType => {
+// 			res.status(204).json(pointType);
+// 		})
+// 		.catch(err => {
+// 			console.log(err);
+// 			res.status(400).json(err);
+// 		});
+// });
 
 // GET point weightings
 app.get('/leagues/:id/point-weighting', (req, res) => {
@@ -104,31 +116,12 @@ app.get('/leagues/:id/point-weighting', (req, res) => {
 			res.json(points)
 		})
 		.catch(err => {
-			console.log(err)
-			res.status(400).json(err);
-		});
-});
-
-// PUT point weighting
-app.put('/leagues/:id/point-weighting', jsonParser, (req, res) => {
-	const data = {
-		league: req.params.id,
-		type: req.body.type,
-		weight: req.body.weight
-	}
-	PointWeight.update({type: req.body.type}, { $set: data }, { "new": true })
-		.then(pointType => {
-			res.status(204).json(pointType);
-		})
-		.catch(err => {
-			console.log(err);
 			res.status(400).json(err);
 		});
 });
 
 // POST league players
 app.post('/leagues/:id/players', jsonParser, (req, res) => {
-	console.log('POST players req.body: ', req.body)
 	const data = {
 		name: req.body.name,
 		league: req.params.id
@@ -138,7 +131,6 @@ app.post('/leagues/:id/players', jsonParser, (req, res) => {
 			res.status(201).json(players);
 		})
 		.catch((err) => {
-			console.log(err);
 			res.status(400).json(err);
 		});
 });
@@ -147,16 +139,14 @@ app.post('/leagues/:id/players', jsonParser, (req, res) => {
 app.get('/leagues/:id/players', (req, res) => {
 	Player.find({league: req.params.id})
 		.then(players => {
-			console.log(players)
 			res.json(players)
 		})
 		.catch(err => {
-			console.log(err);
 			res.status(400).json(err);
 		});
 });
 
-// DELETE league players (Probably implement later)
+// DELETE league players TODO: implement front-end
 // app.delete('/leagues/:id/remove-player/:playerId', (req, res) => {
 // 	Player.findByIdAndRemove(req.params.playerId)
 // 		.then(players => {
@@ -170,48 +160,41 @@ app.get('/leagues/:id/players', (req, res) => {
 
 // POST new round
 app.post('/leagues/:id/round', jsonParser, (req, res) => {
-	// console.log('POST round req.body:', req.body)
     Round.create(req.body)
 		.then(round => {
 			res.status(201).json(round);
 		})
 		.catch(err => {
-			console.log(err);
 			res.status(400).json(err);
 		});
 });
 
 // GET round
 app.get('/leagues/:id/round/:roundId', (req, res) => {
-	console.log('req.body: ', req.body)
 	Round.findById(req.params.roundId)
-		.populate('totalPoints')
 		.then(round => {
-			console.log('GET round: ', round)
 			res.json(round);
 		})
 		.catch(err => {
-			console.log(err);
 			res.status(400).json(err);
 		});
 });
 
-// UPDATE round TODO: do i need this?
-app.put('/leagues/:id/round/:roundId', jsonParser, (req, res) => {
-	// console.log('req.body: ', req.body)
-	Round.findByIdAndUpdate(req.params.roundId, { $set: req.body }, { "new": true })
-		.then(round => {
-			res.status(204).json(round);
-		})
-		.catch(err => {
-			console.log(err)
-			res.status(400).json(err);
-		});
-});
+// UPDATE round TODO: implement front-end
+// app.put('/leagues/:id/round/:roundId', jsonParser, (req, res) => {
+// 	// console.log('req.body: ', req.body)
+// 	Round.findByIdAndUpdate(req.params.roundId, { $set: req.body }, { "new": true })
+// 		.then(round => {
+// 			res.status(204).json(round);
+// 		})
+// 		.catch(err => {
+// 			console.log(err)
+// 			res.status(400).json(err);
+// 		});
+// });
 
 // POST points allocation
 app.post('/leagues/:id/:roundId/points-allocation/:playerId', jsonParser, (req, res) => {
-	console.log('post points req.body.total: ', req.body)
 	PointAllocation.update(
 		{
 			round: req.params.roundId,
@@ -228,26 +211,12 @@ app.post('/leagues/:id/:roundId/points-allocation/:playerId', jsonParser, (req, 
 			upsert: true
 		})
 		.then(roundPoints => {
-			console.log('roundPoints: ', roundPoints)
 			res.status(201).json(roundPoints);
 		})
 		.catch(err => {
-			console.log(err)
 			res.status(400).json(err);
 		});
 });
-
-// GET points allocation for each player
-// app.get('/leagues/:id/points-allocation/:playerId', (req, res) => {
-// 	PointAllocation.find({player: req.params.playerId})
-// 		.then(points => {
-// 			res.json(points);
-// 		})
-// 		.catch(err => {
-// 			console.log(err)
-// 			res.status(400).json(err);
-// 		});
-// });
 
 // GET points for all players in a round
 app.get('/leagues/:id/:roundId/points-allocation', (req, res) => {
@@ -256,29 +225,22 @@ app.get('/leagues/:id/:roundId/points-allocation', (req, res) => {
 			res.json(allRoundPoints);
 		})
 		.catch(err => {
-			console.log(err)
 			res.status(400).json(err);
 		});
 });
 
-// GET points allocation for all player in all rounds
+// GET points allocation for all league player in all rounds
 app.get('/leagues/:id/points-allocation', (req, res) => {
 	PointAllocation.find({league: req.params.id})
 		.then(allLeaguePoints => {
 			res.json(allLeaguePoints);
 		})
 		.catch(err => {
-			console.log(err)
 			res.status(400).json(err);
 		});
 });
 
-// PUT points allocation
-app.put('/leagues/:id/:roundId/points-allocation/:playerId', jsonParser, (req, res) => {
-
-});
-
-// If time permits:
+// TODO:
 // DELETE round
 // DELETE points weighting
 // DELETE points allocation
