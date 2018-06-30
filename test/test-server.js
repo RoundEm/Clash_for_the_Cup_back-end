@@ -93,7 +93,7 @@ describe('App API', function() {
         return initSeedData();
     });
     afterEach(() => {
-        // return tearDownDb();
+        return tearDownDb();
     });
     after(() => {
         return closeServer();
