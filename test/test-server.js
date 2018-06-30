@@ -246,12 +246,11 @@ describe('App API', function() {
                 type: 'Throwing Club',
                 weight: -10
             }
-            return PointWeight
-                .findOne()
-                .then(function(pointDef) {
-                    const id = pointDef._id;
+            return chai.request(app)
+                .get('/leagues')
+                .then(function(res) {
                     return chai.request(app)
-                        .post(`/leagues/${id}/point-weighting`)
+                        .post(`/leagues/${res.body[0]._id}/point-weighting`)
                         .send(newPointDef)
                         .then(function(res) {
                             expect(res).to.have.status(200);
