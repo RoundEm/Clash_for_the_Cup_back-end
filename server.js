@@ -76,50 +76,6 @@ app.delete('/leagues/:id', (req, res) => {
 		})
 });
 
-// POST point weighting
-app.post('/leagues/:id/point-weighting', jsonParser, (req, res) => {
-	const data = {
-		league: req.params.id,
-		type: req.body.type,
-		weight: req.body.weight
-	}
-	PointWeight.create(data)
-		.then(pointType => {
-			res.json(pointType)
-		})
-		.catch(err => {
-			res.status(400).json(err);
-		});
-});
-
-// PUT point weighting - TODO: implement front-end
-// app.put('/leagues/:id/point-weighting', jsonParser, (req, res) => {
-// 	const data = {
-// 		league: req.params.id,
-// 		type: req.body.type,
-// 		weight: req.body.weight
-// 	}
-// 	PointWeight.update({type: req.body.type}, { $set: data }, { "new": true })
-// 		.then(pointType => {
-// 			res.status(204).json(pointType);
-// 		})
-// 		.catch(err => {
-// 			console.log(err);
-// 			res.status(400).json(err);
-// 		});
-// });
-
-// GET point weightings
-app.get('/leagues/:id/point-weighting', (req, res) => {
-	PointWeight.find({league: req.params.id})
-		.then(points => {
-			res.json(points)
-		})
-		.catch(err => {
-			res.status(400).json(err);
-		});
-});
-
 // POST league players
 app.post('/leagues/:id/players', jsonParser, (req, res) => {
 	const data = {
@@ -146,17 +102,32 @@ app.get('/leagues/:id/players', (req, res) => {
 		});
 });
 
-// DELETE league players TODO: implement front-end
-// app.delete('/leagues/:id/remove-player/:playerId', (req, res) => {
-// 	Player.findByIdAndRemove(req.params.playerId)
-// 		.then(players => {
-// 			res.status(204).send('Player deleted');
-// 		})
-// 		.catch((err) => {
-// 			console.log(err);
-// 			res.status(400).json(err);
-// 		});
-// });
+// POST point definition
+app.post('/leagues/:id/point-weighting', jsonParser, (req, res) => {
+	const data = {
+		league: req.params.id,
+		type: req.body.type,
+		weight: req.body.weight
+	}
+	PointWeight.create(data)
+		.then(pointType => {
+			res.json(pointType)
+		})
+		.catch(err => {
+			res.status(400).json(err);
+		});
+});
+
+// GET point definitions
+app.get('/leagues/:id/point-weighting', (req, res) => {
+	PointWeight.find({league: req.params.id})
+		.then(points => {
+			res.json(points)
+		})
+		.catch(err => {
+			res.status(400).json(err);
+		});
+});
 
 // POST new round
 app.post('/leagues/:id/round', jsonParser, (req, res) => {
@@ -179,19 +150,6 @@ app.get('/leagues/:id/round/:roundId', (req, res) => {
 			res.status(400).json(err);
 		});
 });
-
-// UPDATE round TODO: implement front-end
-// app.put('/leagues/:id/round/:roundId', jsonParser, (req, res) => {
-// 	// console.log('req.body: ', req.body)
-// 	Round.findByIdAndUpdate(req.params.roundId, { $set: req.body }, { "new": true })
-// 		.then(round => {
-// 			res.status(204).json(round);
-// 		})
-// 		.catch(err => {
-// 			console.log(err)
-// 			res.status(400).json(err);
-// 		});
-// });
 
 // POST points allocation
 app.post('/leagues/:id/:roundId/points-allocation/:playerId', jsonParser, (req, res) => {
@@ -218,7 +176,7 @@ app.post('/leagues/:id/:roundId/points-allocation/:playerId', jsonParser, (req, 
 		});
 });
 
-// GET points for all players in a round
+// GET point allocations for all players in a round
 app.get('/leagues/:id/:roundId/points-allocation', (req, res) => {
 	PointAllocation.find({round: req.params.roundId})
 		.then(allRoundPoints => {
@@ -239,11 +197,6 @@ app.get('/leagues/:id/points-allocation', (req, res) => {
 			res.status(400).json(err);
 		});
 });
-
-// TODO:
-// DELETE round
-// DELETE points weighting
-// DELETE points allocation
 
 // No endpoint hit
 app.use((req, res) => {
@@ -282,3 +235,48 @@ if (require.main === module) {
 }
 
 module.exports = { app, runServer, closeServer }
+
+// TODO:
+// DELETE round
+// DELETE points weighting
+// DELETE league players TODO: implement front-end
+// app.delete('/leagues/:id/remove-player/:playerId', (req, res) => {
+// 	Player.findByIdAndRemove(req.params.playerId)
+// 		.then(players => {
+// 			res.status(204).send('Player deleted');
+// 		})
+// 		.catch((err) => {
+// 			console.log(err);
+// 			res.status(400).json(err);
+// 		});
+// });
+
+// PUT point definition - TODO: implement front-end
+// app.put('/leagues/:id/point-weighting', jsonParser, (req, res) => {
+// 	const data = {
+// 		league: req.params.id,
+// 		type: req.body.type,
+// 		weight: req.body.weight
+// 	}
+// 	PointWeight.update({type: req.body.type}, { $set: data }, { "new": true })
+// 		.then(pointType => {
+// 			res.status(204).json(pointType);
+// 		})
+// 		.catch(err => {
+// 			console.log(err);
+// 			res.status(400).json(err);
+// 		});
+// });
+
+// UPDATE round TODO: implement front-end
+// app.put('/leagues/:id/round/:roundId', jsonParser, (req, res) => {
+// 	// console.log('req.body: ', req.body)
+// 	Round.findByIdAndUpdate(req.params.roundId, { $set: req.body }, { "new": true })
+// 		.then(round => {
+// 			res.status(204).json(round);
+// 		})
+// 		.catch(err => {
+// 			console.log(err)
+// 			res.status(400).json(err);
+// 		});
+// });

@@ -3,7 +3,7 @@ function getDbUrl() {
 	if (process.env.NODE_ENV === 'production') {
 		url = process.env.DATABASE_URL;
 	} else if (process.env.NODE_ENV === 'test') {
-		url = process.env.TEST_DATABASE_URL || 'mongodb://localhost/clash_for_the_cup'
+		url = process.env.TEST_DATABASE_URL || 'mongodb://localhost/test_clash_for_the_cup'
 	} 
 	return url || 'mongodb://localhost/clash_for_the_cup'
 }

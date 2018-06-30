@@ -7,7 +7,7 @@ const leagueSchema = new Schema({
         required: true
     },
     endDate: {
-        type: Date,
+        type: Date
     }
 }, { toJSON: { virtuals: true } });
 
@@ -28,6 +28,7 @@ leagueSchema.virtual('points', {
     localField: '_id',
     foreignField: 'league'
 });
+
 
 const playerSchema = new Schema({
     name: {
@@ -61,14 +62,7 @@ const roundSchema = new Schema({
         type: Schema.Types.ObjectId, 
         ref: 'Player'
     }]
-    // players: [String]
 });
-
-// leagueSchema.virtual('points', {
-//     ref: 'PointAllocation',
-//     localField: '_id',
-//     foreignField: 'total'
-// });
 
 const pointWeightSchema = new Schema({
     league: { 
@@ -108,6 +102,7 @@ const PointAllocation = mongoose.model('PointAllocation', pointAllocationSchema)
 
 module.exports = { League, Round, Player, PointWeight, PointAllocation }
 
+
 // counts: {
     //     TODO: if this doesn't work use String type w/getter and setter: https://stackoverflow.com/questions/17497875/storing-json-object-in-mongoose-string-key
     //     type: Object
@@ -115,3 +110,41 @@ module.exports = { League, Round, Player, PointWeight, PointAllocation }
     //     label: count,
     // },
     // TODO: add addEntry and computeTotal
+
+    // , { toObject: { transform: function(doc, ret) {
+//     ret.totalPoints = doc.getTotalPoints();
+//     return ret;
+// } }});
+
+// EXAMPLE: AnimalSchema.methods.findSimilarType = function findSimilarType (cb) {
+//  return this.model('Animal').find({ type: this.type }, cb);
+// };
+
+// roundSchema.methods.getTotalPoints = function(cb) {
+//     const PointAllocation = this.model('PointAllocation');
+//     const docs = PointAllocation.find({round: this._id})
+//         .then(doc => {
+//             console.log('getTotalPoints doc: ', doc)
+//             let total = 0;
+//             doc.forEach(d => {
+//                 total += d.total
+//             });
+//             return total;
+//         })
+//         .catch(err => {
+//             console.log(err)
+//         });
+    // try {
+    //     const docs = PointAllocation.find({round: this._id})
+    //     if (docs.length === 0) {
+    //         return 'docs length 0';
+    //     }
+    //     let total = 0;
+    //     docs.forEach(doc => {
+    //         total += doc.total
+    //     });
+    //     return total;   
+    // } catch(e) {
+    //     return 'catch block ran';
+    // }
+// };
