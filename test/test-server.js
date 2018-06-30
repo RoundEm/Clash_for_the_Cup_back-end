@@ -109,7 +109,6 @@ describe('App API', function() {
                 .post('/league')
                 .send(newLeague)
                 .then(function(res) {
-                    console.log('POST res')
                     expect(res).to.have.status(201);
                     expect(res).to.be.json;
                     expect(res.body).to.be.a('object');
@@ -226,7 +225,6 @@ describe('App API', function() {
                     return chai.request(app)
                         .get(`/leagues/${leagueId}/players`)
                         .then(function(res) {
-                            console.log('GETPlayers: ', res.body)
                             expect(res).to.have.status(200);
                             expect(res).to.be.json;
                             expect(res.body).to.be.a('array');
