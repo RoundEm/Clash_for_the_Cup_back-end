@@ -12,6 +12,6 @@ exports.PORT = process.env.PORT || 8080;
 
 exports.DB_URL = getDbUrl();
 
-exports.CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:3000'
+exports.CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'https://clash-for-the-cup.herokuapp.com' ||'http://localhost:3000'
 
  
